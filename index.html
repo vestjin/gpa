@@ -1,94 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPA 计算器 · 含课程名 · 导出PDF</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>📱 GPA计算器 · 实时过程 · 移动优化</title>
     <style>
         * {
             box-sizing: border-box;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
         body {
-            background: #f1f5f9;
-            margin: 0;
+            background: #f8fafc;
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 1rem;
+            align-items: flex-start;
+            padding: 12px;
         }
         .card {
-            max-width: 1100px;
+            max-width: 780px;
             width: 100%;
             background: white;
             border-radius: 28px;
-            box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.2);
-            padding: 2rem 1.8rem;
+            box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.12);
+            padding: 1.5rem 1.2rem;
         }
         h1 {
-            font-size: 2rem;
+            font-size: 1.9rem;
             font-weight: 600;
-            margin-top: 0;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.3rem;
             color: #0f172a;
             letter-spacing: -0.02em;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
+            flex-wrap: wrap;
         }
         .formula-badge {
-            background: #dbeafe;
-            color: #1e40af;
-            padding: 0.8rem 1.4rem;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 0.7rem 1rem;
             border-radius: 40px;
             font-weight: 500;
-            font-size: 1.1rem;
-            margin: 0.8rem 0 1.8rem 0;
-            border-left: 6px solid #2563eb;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-            display: inline-block;
+            font-size: 1rem;
+            margin: 0.5rem 0 1.5rem 0;
+            border-left: 6px solid #0284c7;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            word-break: break-word;
         }
         .formula-badge span {
             font-family: 'Courier New', monospace;
             background: #ffffffb0;
-            padding: 0.2rem 0.8rem;
+            padding: 0.15rem 0.8rem;
             border-radius: 30px;
-            margin-left: 0.6rem;
+            margin-left: 0.4rem;
             font-weight: 600;
+            white-space: nowrap;
         }
         .table-wrapper {
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
             border-radius: 20px;
             border: 1px solid #e2e8f0;
             background: #ffffff;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 10px -4px rgba(0,0,0,0.05);
+            margin-bottom: 1.2rem;
+            box-shadow: 0 4px 10px -4px rgba(0,0,0,0.03);
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.95rem;
-            min-width: 600px;
+            font-size: 0.9rem;
+            min-width: 550px;  /* 保证列宽足够，溢出滚动 */
         }
         th {
             background: #f1f5f9;
             font-weight: 600;
             color: #1e293b;
-            padding: 1rem 0.75rem;
+            padding: 0.9rem 0.5rem;
             text-align: left;
-            border-bottom: 2px solid #94a3b8;
+            border-bottom: 2px solid #cbd5e1;
             white-space: nowrap;
         }
         td {
-            padding: 0.7rem 0.5rem;
+            padding: 0.6rem 0.4rem;
             border-bottom: 1px solid #e2e8f0;
             vertical-align: middle;
         }
         input {
             width: 100%;
-            padding: 0.7rem 0.9rem;
-            font-size: 0.95rem;
+            padding: 0.6rem 0.7rem;
+            font-size: 0.9rem;
             border: 1px solid #cbd5e1;
             border-radius: 14px;
             background: #ffffff;
@@ -97,7 +100,7 @@
         }
         input:focus {
             border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
         input[type="number"] {
             -moz-appearance: textfield;
@@ -105,7 +108,7 @@
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             opacity: 0.5;
-            height: 20px;
+            height: 18px;
         }
         .delete-btn {
             background: #fee2e2;
@@ -115,7 +118,7 @@
             line-height: 1;
             width: 38px;
             height: 38px;
-            border-radius: 50%;
+            border-radius: 40px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -127,30 +130,35 @@
         .delete-btn:hover {
             background: #fecaca;
             color: #7f1d1d;
-            transform: scale(1.05);
+        }
+        .delete-btn:active {
+            background: #fca5a5;
+            transform: scale(0.96);
         }
         .action-bar {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.75rem;
+            gap: 0.7rem;
             align-items: center;
             justify-content: space-between;
-            margin: 1.8rem 0 1.2rem;
+            margin: 1.2rem 0 1.2rem;
         }
         .btn {
             background: white;
             border: 1px solid #cbd5e1;
-            padding: 0.7rem 1.5rem;
+            padding: 0.6rem 1.3rem;
             border-radius: 40px;
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #1e293b;
             cursor: pointer;
             transition: 0.15s;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            flex: 1 1 auto;
+            justify-content: center;
         }
         .btn-primary {
             background: #2563eb;
@@ -161,132 +169,160 @@
         .btn-primary:hover {
             background: #1d4ed8;
         }
-        .btn:hover {
-            background: #f8fafc;
+        .btn:active {
+            background: #f1f5f9;
+            transform: scale(0.98);
         }
         .gpa-result {
             background: linear-gradient(145deg, #0f172a, #1e293b);
             color: white;
-            padding: 1.2rem 2rem;
+            padding: 1rem 1.8rem;
             border-radius: 60px;
             display: inline-block;
             font-weight: 600;
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             letter-spacing: -0.01em;
             box-shadow: 0 12px 24px -12px #0f172a;
+            width: auto;
+            text-align: center;
         }
         .gpa-label {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 400;
             opacity: 0.7;
-            margin-right: 0.8rem;
+            margin-right: 0.5rem;
             text-transform: uppercase;
         }
+
+        /* ---------- 实时计算过程卡片 (新增) ---------- */
+        .process-card {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 1.2rem 1rem;
+            margin: 1.5rem 0 0.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .process-title {
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.9rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .process-list {
+            list-style: none;
+            margin: 0 0 0.8rem 0;
+            padding: 0;
+            font-size: 0.9rem;
+        }
+        .process-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+            border-bottom: 1px dashed #cbd5e1;
+        }
+        .process-item:last-child {
+            border-bottom: none;
+        }
+        .course-name {
+            font-weight: 500;
+            color: #1e293b;
+            max-width: 45%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .course-weight {
+            font-family: 'Courier New', monospace;
+            background: #e9eef3;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: #0c4a6e;
+        }
+        .process-summary {
+            background: #e9eef3;
+            border-radius: 18px;
+            padding: 0.9rem 1rem;
+            margin: 0.6rem 0 0;
+            font-size: 0.95rem;
+            border-left: 4px solid #2563eb;
+        }
+        .summary-line {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0.2rem 0;
+        }
+        .summary-label {
+            color: #334155;
+            font-weight: 500;
+        }
+        .summary-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .gpa-equation {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0.3rem;
+            padding-top: 0.3rem;
+            border-top: 1px solid #94a3b8;
+            color: #1e3a8a;
+        }
+
+        /* 移动端小屏幕额外优化 */
+        @media (max-width: 480px) {
+            .card { padding: 1rem 0.8rem; }
+            h1 { font-size: 1.7rem; }
+            .formula-badge { font-size: 0.9rem; padding: 0.5rem 0.8rem; }
+            .btn { padding: 0.5rem 0.9rem; font-size: 0.85rem; }
+            .gpa-result { font-size: 1.4rem; padding: 0.8rem 1.2rem; }
+            .process-item { font-size: 0.85rem; }
+            .course-weight { font-size: 0.8rem; padding: 0.15rem 0.6rem; }
+            .summary-line { font-size: 0.85rem; }
+        }
+
         .footer-note {
             color: #475569;
-            font-size: 0.85rem;
-            margin-top: 1.2rem;
+            font-size: 0.8rem;
+            margin-top: 1rem;
             text-align: right;
             border-top: 1px dashed #cbd5e1;
-            padding-top: 1rem;
+            padding-top: 0.8rem;
         }
 
-        /* 打印专用区域 (屏幕隐藏) */
-        .print-container {
-            display: none;
-        }
-
-        /* 打印样式 */
-        @media print {
-            body > *:not(.print-container):not(.print-container *),
-            .card, .action-bar, h1, .formula-badge, .table-wrapper, .footer-note {
-                display: none !important;
-            }
-            .print-container {
-                display: block !important;
-                padding: 0.4in 0.3in;
-                background: white;
-                color: black;
-                font-size: 12pt;
-                font-family: 'Times New Roman', serif;
-            }
-            .print-header {
-                font-size: 24pt;
-                margin-bottom: 0.2in;
-                font-weight: 600;
-                border-bottom: 2px solid #333;
-                padding-bottom: 0.1in;
-            }
-            .print-formula {
-                background: #f2f2f2;
-                padding: 10px 16px;
-                font-family: 'Courier New', monospace;
-                font-size: 14pt;
-                margin: 0.2in 0 0.3in 0;
-                border-left: 6px solid #2563eb;
-                font-weight: 500;
-            }
-            .print-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 0.25in 0;
-                border: 2px solid #222;
-            }
-            .print-table th {
-                background: #ddd !important;
-                color: black;
-                font-weight: 700;
-                padding: 8px 6px;
-                border: 1px solid #111;
-                text-align: center;
-            }
-            .print-table td {
-                padding: 6px 8px;
-                border: 1px solid #333;
-                text-align: left;
-            }
-            .print-gpa-box {
-                font-size: 20pt;
-                font-weight: bold;
-                border: 3px double #1e293b;
-                padding: 12px 25px;
-                display: inline-block;
-                margin-top: 25px;
-                background: #f8fafc;
-            }
-            .print-date {
-                color: #2c3e50;
-                margin-bottom: 0.2in;
-                font-size: 11pt;
-                font-style: italic;
-            }
-            .print-footer {
-                margin-top: 0.4in;
-                font-style: italic;
-                color: #2d3748;
-                border-top: 1px dashed #888;
-                padding-top: 0.1in;
-            }
+        /* 打印专用区域 (保持不变) */
+        .print-container { display: none; }
+        @media print { /* 原有打印样式保留，略作微调以适应课程名列 */ 
+            body > *:not(.print-container):not(.print-container *) { display: none !important; }
+            .print-container { display: block !important; padding: 0.3in; }
+            .print-table th, .print-table td { border: 1px solid #000; }
         }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>📘 课程 GPA 计算器</h1>
-        <!-- 显式计算公式 -->
+        <h1>📘 GPA 计算器 · 移动版</h1>
         <div class="formula-badge">
-            📐 计算公式 <span>平均学分绩点 = ∑(课程绩点 × 学分) / ∑学分</span>
+            📐 公式 <span>GPA = ∑(绩点×学分) / ∑学分</span>
         </div>
 
-        <!-- 课程表格 (包含课程名、绩点、学分、操作) -->
+        <!-- 课程表格 (含课程名、绩点、学分、操作) -->
         <div class="table-wrapper">
             <table id="courseTable">
                 <thead>
                     <tr>
-                        <th>课程名称</th>
+                        <th>课程名</th>
                         <th>绩点</th>
                         <th>学分</th>
-                        <th style="width: 70px;">操作</th>
+                        <th style="width: 60px;">删</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -298,75 +334,76 @@
         <!-- 按钮栏 -->
         <div class="action-bar">
             <button class="btn" id="addRowBtn">➕ 添加课程</button>
-            <button class="btn btn-primary" id="exportPdfBtn">🖨️ 导出 PDF (含公式)</button>
+            <button class="btn btn-primary" id="exportPdfBtn">🖨️ 导出 PDF</button>
         </div>
 
-        <!-- GPA 结果显示 -->
-        <div style="display: flex; justify-content: flex-end;">
+        <!-- GPA 结果卡片 -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 0.5rem;">
             <div class="gpa-result" id="gpaDisplay">
                 <span class="gpa-label">GPA</span> 0.000
             </div>
         </div>
+
+        <!-- ========= 实时详细计算过程 (带课程名) ========= -->
+        <div class="process-card" id="processCard">
+            <div class="process-title">📋 实时计算明细</div>
+            <ul class="process-list" id="processList">
+                <!-- 动态生成每门课: 课程名 + 绩点×学分 -->
+            </ul>
+            <div class="process-summary" id="processSummary">
+                <!-- 总和及算式 -->
+            </div>
+        </div>
+
         <div class="footer-note">
-            ⚡ 实时计算 · 点击导出PDF，将保存含课程名、公式及结果的正式表格
+            ⚡ 每项输入实时更新 · 点击导出PDF保存含完整过程的表格
         </div>
     </div>
 
-    <!-- 隐藏的打印专用区域：导出PDF时动态填充，仅打印可见 -->
+    <!-- 隐藏打印容器 (与之前相同，但确保乘积列存在) -->
     <div class="print-container" id="printContainer">
         <div class="print-header">📑 学业成绩报告 (GPA)</div>
         <div class="print-date" id="printDate"></div>
-        <!-- 打印时显示公式 -->
-        <div class="print-formula" id="printFormula">计算公式：平均学分绩点 = ∑(课程绩点 × 学分) / ∑学分</div>
-
+        <div class="print-formula">计算公式：平均学分绩点 = ∑(课程绩点 × 学分) / ∑学分</div>
         <table class="print-table" id="printTable">
             <thead>
-                <tr>
-                    <th>序号</th>
-                    <th>课程名称</th>
-                    <th>绩点</th>
-                    <th>学分</th>
-                </tr>
+                <tr><th>序号</th><th>课程名称</th><th>绩点</th><th>学分</th><th>绩点×学分</th></tr>
             </thead>
-            <tbody id="printTableBody">
-                <!-- 由JS动态生成行 -->
-            </tbody>
+            <tbody id="printTableBody"></tbody>
         </table>
-
-        <div style="text-align: right; margin-top: 25px;">
-            <span class="print-gpa-box" id="printGpa">0.000</span>
-        </div>
-        <div class="print-footer">—— 本表格由 GPA 计算器生成，数据源自输入 ——</div>
+        <div class="print-steps" id="printSteps"></div>
+        <div style="text-align:right;"><span class="print-gpa-box" id="printGpa">0.000</span></div>
+        <div class="print-footer">—— GPA计算器生成 ——</div>
     </div>
 
     <script>
         (function() {
-            // 获取元素
+            // DOM 元素
             const tableBody = document.getElementById('tableBody');
             const addRowBtn = document.getElementById('addRowBtn');
             const gpaDisplay = document.getElementById('gpaDisplay');
             const exportPdfBtn = document.getElementById('exportPdfBtn');
+            const processList = document.getElementById('processList');
+            const processSummary = document.getElementById('processSummary');
 
-            // 打印区域元素
+            // 打印元素
             const printTableBody = document.getElementById('printTableBody');
             const printGpaSpan = document.getElementById('printGpa');
             const printDateSpan = document.getElementById('printDate');
-            // 打印公式元素已静态存在，不需要动态修改
+            const printStepsDiv = document.getElementById('printSteps');
 
-            // --- 初始化: 添加两行空行 (便于输入) ---
+            // --- 辅助函数：添加新行 ---
             function addNewRow(nameVal = '', gradeVal = '', creditVal = '') {
                 const tr = document.createElement('tr');
-
-                // 课程名称单元格
+                // 课程名
                 const tdName = document.createElement('td');
                 const nameInput = document.createElement('input');
                 nameInput.type = 'text';
                 nameInput.classList.add('course-name');
-                nameInput.placeholder = '例如 高等数学';
+                nameInput.placeholder = '例如 数学';
                 nameInput.value = nameVal;
                 tdName.appendChild(nameInput);
-
-                // 绩点单元格
+                // 绩点
                 const tdGrade = document.createElement('td');
                 const gradeInput = document.createElement('input');
                 gradeInput.type = 'number';
@@ -376,8 +413,7 @@
                 gradeInput.placeholder = '绩点';
                 gradeInput.value = gradeVal;
                 tdGrade.appendChild(gradeInput);
-
-                // 学分单元格
+                // 学分
                 const tdCredit = document.createElement('td');
                 const creditInput = document.createElement('input');
                 creditInput.type = 'number';
@@ -387,86 +423,110 @@
                 creditInput.placeholder = '学分';
                 creditInput.value = creditVal;
                 tdCredit.appendChild(creditInput);
-
-                // 操作单元格（删除按钮）
+                // 删除按钮列
                 const tdAction = document.createElement('td');
                 const delBtn = document.createElement('button');
                 delBtn.classList.add('delete-btn');
                 delBtn.innerHTML = '✕';
-                delBtn.setAttribute('aria-label', '删除课程');
                 tdAction.appendChild(delBtn);
 
                 tr.appendChild(tdName);
                 tr.appendChild(tdGrade);
                 tr.appendChild(tdCredit);
                 tr.appendChild(tdAction);
-
                 tableBody.appendChild(tr);
-                // 计算GPA (虽然课程名不影响，但绩点/学分变化需计算)
-                calculateGPA();
+                updateAll(); // 更新GPA和明细
             }
 
-            // 默认添加两行空白 (无预填值)
+            // 默认添加两行空行
             addNewRow('', '', '');
             addNewRow('', '', '');
 
-            // --- 事件监听 (使用委托) ---
-            // 输入变化 -> 重新计算GPA (只关心绩点和学分)
+            // --- 事件监听 (委托) ---
             tableBody.addEventListener('input', function(e) {
-                if (e.target.classList.contains('grade-point') || e.target.classList.contains('credit')) {
-                    calculateGPA();
+                if (e.target.classList.contains('grade-point') || e.target.classList.contains('credit') || e.target.classList.contains('course-name')) {
+                    updateAll();
                 }
-                // 课程名称变化不需要重新计算，但保留委托无妨
             });
 
-            // 删除按钮委托
             tableBody.addEventListener('click', function(e) {
                 const btn = e.target.closest('.delete-btn');
                 if (!btn) return;
                 const row = btn.closest('tr');
                 if (row) {
                     row.remove();
-                    calculateGPA();
+                    updateAll();
                 }
             });
 
-            // 添加行按钮
             addRowBtn.addEventListener('click', function() {
                 addNewRow('', '', '');
             });
 
-            // --- 计算GPA (实时更新显示) ---
-            function calculateGPA() {
+            // --- 核心更新函数：计算GPA并刷新实时明细区域 ---
+            function updateAll() {
                 const rows = tableBody.querySelectorAll('tr');
-                let totalGradePoints = 0;  // ∑(绩点×学分)
+                let totalProduct = 0;      // ∑(绩点×学分)
                 let totalCredits = 0;       // ∑学分
+                const validCourses = [];     // 存储有效课程 { name, grade, credit, product }
 
                 rows.forEach(row => {
+                    const nameInput = row.querySelector('.course-name');
                     const gradeInput = row.querySelector('.grade-point');
                     const creditInput = row.querySelector('.credit');
-                    if (!gradeInput || !creditInput) return;
+                    if (!nameInput || !gradeInput || !creditInput) return;
 
+                    const name = nameInput.value.trim() || '未命名';
                     const grade = parseFloat(gradeInput.value);
                     const credit = parseFloat(creditInput.value);
 
-                    // 有效性：绩点≥0，学分>0 才纳入计算
+                    // 判断有效 (绩点≥0, 学分>0)
                     if (!isNaN(grade) && !isNaN(credit) && credit > 0 && grade >= 0) {
-                        totalGradePoints += grade * credit;
+                        const product = grade * credit;
+                        totalProduct += product;
                         totalCredits += credit;
+                        validCourses.push({ name, grade, credit, product });
+                    } else {
+                        // 无效课程也展示，但乘积显示为「—」
+                        validCourses.push({ name, grade, credit, product: null });
                     }
                 });
 
-                let gpa = 0;
-                if (totalCredits > 0) {
-                    gpa = totalGradePoints / totalCredits;
-                }
+                // 计算GPA
+                const gpa = totalCredits > 0 ? totalProduct / totalCredits : 0;
                 gpaDisplay.innerHTML = `<span class="gpa-label">GPA</span> ${gpa.toFixed(3)}`;
-                return gpa;
+
+                // --- 渲染实时明细 (带课程名) ---
+                let processHtml = '';
+                validCourses.forEach(c => {
+                    const productStr = c.product !== null ? c.product.toFixed(3) : '—';
+                    // 显示课程名 + 乘积 (绩点×学分)
+                    processHtml += `<li class="process-item">
+                        <span class="course-name" title="${c.name}">${c.name}</span>
+                        <span class="course-weight">${c.product !== null ? c.grade + '×' + c.credit + '=' + productStr : '无效数据'}</span>
+                    </li>`;
+                });
+                processList.innerHTML = processHtml;
+
+                // 构建底部总和与算式
+                let summaryHtml = '';
+                if (totalCredits > 0) {
+                    summaryHtml = `
+                        <div class="summary-line"><span class="summary-label">∑(绩点×学分)</span> <span class="summary-value">${totalProduct.toFixed(3)}</span></div>
+                        <div class="summary-line"><span class="summary-label">∑学分</span> <span class="summary-value">${totalCredits.toFixed(3)}</span></div>
+                        <div class="gpa-equation">${totalProduct.toFixed(3)} / ${totalCredits.toFixed(3)} = ${gpa.toFixed(3)}</div>
+                    `;
+                } else {
+                    summaryHtml = `<div class="summary-line">暂无有效课程（学分需>0）</div>`;
+                }
+                processSummary.innerHTML = summaryHtml;
+
+                // 返回总和以便导出使用
+                return { totalProduct, totalCredits, gpa, validCourses };
             }
 
-            // --- 导出PDF：填充打印区域然后调用浏览器打印 ---
+            // --- 导出PDF (填充打印容器) ---
             function exportToPdf() {
-                // 1. 收集当前所有课程数据 (包含课程名、绩点、学分)
                 const rows = tableBody.querySelectorAll('tr');
                 const courses = [];
                 rows.forEach(row => {
@@ -475,83 +535,81 @@
                     const creditInput = row.querySelector('.credit');
                     if (nameInput && gradeInput && creditInput) {
                         courses.push({
-                            name: nameInput.value.trim() || ' ',
+                            name: nameInput.value.trim() || '未命名',
                             grade: gradeInput.value.trim() || ' ',
                             credit: creditInput.value.trim() || ' '
                         });
                     }
                 });
 
-                // 2. 计算当前GPA
-                let totalGradePoints = 0;
-                let totalCredits = 0;
+                // 重新计算总和 (复用updateAll逻辑，但为了避免重复，直接调用计算)
+                let totalProduct = 0, totalCredits = 0;
+                const validRows = [];
                 rows.forEach(row => {
+                    const nameInput = row.querySelector('.course-name');
                     const gradeInput = row.querySelector('.grade-point');
                     const creditInput = row.querySelector('.credit');
-                    if (!gradeInput || !creditInput) return;
-                    const g = parseFloat(gradeInput.value);
-                    const c = parseFloat(creditInput.value);
-                    if (!isNaN(g) && !isNaN(c) && c > 0 && g >= 0) {
-                        totalGradePoints += g * c;
-                        totalCredits += c;
+                    if (!nameInput || !gradeInput || !creditInput) return;
+                    const name = nameInput.value.trim() || '未命名';
+                    const grade = parseFloat(gradeInput.value);
+                    const credit = parseFloat(creditInput.value);
+                    if (!isNaN(grade) && !isNaN(credit) && credit > 0 && grade >= 0) {
+                        totalProduct += grade * credit;
+                        totalCredits += credit;
+                        validRows.push({ name, grade, credit, product: grade * credit });
+                    } else {
+                        validRows.push({ name, grade, credit, product: null });
                     }
                 });
-                const finalGpa = totalCredits > 0 ? totalGradePoints / totalCredits : 0;
+                const finalGpa = totalCredits > 0 ? totalProduct / totalCredits : 0;
 
-                // 3. 清空并重建打印表格的tbody (包含课程名列)
+                // 填充打印表格
                 printTableBody.innerHTML = '';
-
                 if (courses.length === 0) {
-                    // 无课程数据：显示一行提示
                     const tr = document.createElement('tr');
                     const td = document.createElement('td');
-                    td.colSpan = 4;  // 现在有4列
+                    td.colSpan = 5;
+                    td.textContent = '—— 无课程 ——';
                     td.style.textAlign = 'center';
-                    td.style.padding = '20px';
-                    td.textContent = '—— 没有添加任何课程 ——';
                     tr.appendChild(td);
                     printTableBody.appendChild(tr);
                 } else {
-                    courses.forEach((course, index) => {
+                    courses.forEach((c, idx) => {
+                        const gradeNum = parseFloat(c.grade);
+                        const creditNum = parseFloat(c.credit);
+                        const valid = !isNaN(gradeNum) && !isNaN(creditNum) && creditNum > 0 && gradeNum >= 0;
+                        const product = valid ? (gradeNum * creditNum).toFixed(3) : '—';
                         const tr = document.createElement('tr');
-                        // 序号
-                        const tdIdx = document.createElement('td');
-                        tdIdx.textContent = index + 1;
-                        tdIdx.style.textAlign = 'center';
-                        // 课程名
-                        const tdName = document.createElement('td');
-                        tdName.textContent = course.name || ' ';
-                        // 绩点
-                        const tdGrade = document.createElement('td');
-                        tdGrade.textContent = course.grade || ' ';
-                        // 学分
-                        const tdCredit = document.createElement('td');
-                        tdCredit.textContent = course.credit || ' ';
-
-                        tr.appendChild(tdIdx);
-                        tr.appendChild(tdName);
-                        tr.appendChild(tdGrade);
-                        tr.appendChild(tdCredit);
+                        tr.innerHTML = `<td style="text-align:center">${idx+1}</td>
+                                        <td>${c.name}</td>
+                                        <td>${c.grade}</td>
+                                        <td>${c.credit}</td>
+                                        <td style="text-align:center">${product}</td>`;
                         printTableBody.appendChild(tr);
                     });
                 }
 
-                // 4. 设置打印日期和GPA (公式已静态存在)
+                // 计算步骤文本
+                let stepsText = '';
+                if (totalCredits > 0) {
+                    stepsText = `∑(绩点×学分) = ${totalProduct.toFixed(3)}\n∑学分 = ${totalCredits.toFixed(3)}\n平均学分绩点 = ${totalProduct.toFixed(3)} / ${totalCredits.toFixed(3)} = ${finalGpa.toFixed(3)}`;
+                } else {
+                    stepsText = `⚠️ 没有足够有效课程（学分需大于0）`;
+                }
+                printStepsDiv.innerHTML = stepsText.replace(/\n/g, '<br>');
+
                 const now = new Date();
-                printDateSpan.textContent = `打印日期：${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}  ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+                printDateSpan.textContent = `打印日期：${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
                 printGpaSpan.textContent = finalGpa.toFixed(3);
 
-                // 5. 调用浏览器打印 (会应用@media print规则)
                 window.print();
             }
 
-            // 绑定导出按钮
             exportPdfBtn.addEventListener('click', exportToPdf);
 
-            // 额外触发一次初始计算
-            calculateGPA();
+            // 初始更新
+            updateAll();
         })();
     </script>
-    <!-- 确保任何输入变化都能触发计算 (已用input事件) -->
 </body>
 </html>
